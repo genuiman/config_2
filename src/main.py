@@ -2,7 +2,7 @@ import os
 import subprocess
 import yaml
 from datetime import datetime
-from git_utils import get_commits_after_date, get_commit_dependencies
+from git_utils import get_commits_after_date, get_linear_dependencies, get_commit_messages
 from plantuml_utils import generate_plantuml
 
 def load_config(config_path):
@@ -18,9 +18,10 @@ def main():
     commit_date = datetime.strptime(config['commit_date'], "%Y-%m-%d")
 
     commits = get_commits_after_date(repo_path, commit_date)
-    dependencies = get_commit_dependencies(repo_path, commits)
+    messages = get_commit_messages(repo_path, commits)
+    dependencies = get_linear_dependencies(repo_path, commits)
 
-    plantuml_code = generate_plantuml(dependencies)
+    plantuml_code = generate_plantuml(dependencies, messages)
 
     with open('graph.puml', 'w') as f:
         f.write(plantuml_code)
